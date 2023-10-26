@@ -3,9 +3,7 @@ const loadPhoneData = async (searchText, dataLimit) => {
     const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
     const res = await fetch(url);
     const data = await res.json();
-    // console.log(data.data);
-    // console.log(dataLimit,'start');
-    ProcessData(data.data,dataLimit);
+    ProcessData(data.data, dataLimit);
 
 }
 
@@ -22,26 +20,16 @@ const ProcessData = (phoneData, dataLimit) => {
     else {
         noPhone.classList.add('d-none')
     }
-    console.log(phoneData.length);
-    
 
     //slice data    
-    console.log(phoneData.length);
-    // if (phoneData.length && dataLimit> 10)
-    console.log(dataLimit, 'dataLimit');
     if (phoneData.length && dataLimit > 10) {
-
-        // console.log(dataLimit);
         const sliceData = phoneData.slice(0, 10);
-        // console.log(sliceData.length);
         showData(sliceData);
         showAllButton(true);
-        console.log('sliced')
     }
     else {
         showData(phoneData);
         showAllButton(false);
-        console.log('not sliced');
     }
 
 }
@@ -49,27 +37,24 @@ const ProcessData = (phoneData, dataLimit) => {
 //showAll button
 const showButton = document.getElementById('showAll');
 const showAllButton = (term) => {
-    
+
     if (term === true) {
         showButton.classList.remove('d-none');
-        // console.log(term)
     }
     else {
-        // console.log(term)
         showButton.classList.add('d-none');
     }
 }
-
+//when we will click the show all button then this function will pass value 0 the the if condition will not execute the else condition will show the all phone data.
 const showAll = () => {
     searchPhone();
-   
+
 }
 //use slice array/object  to show the data
 const showData = (phoneData) => {
     getContainer.innerHTML = ' '; //to clear previous data after search
     phoneData.forEach(phone => {
         const addDiv = document.createElement('div');
-        // addDiv.classList.add('')
         addDiv.innerHTML = `
             <div class="col">
                 <div class="card h-100 p-3">
@@ -78,11 +63,15 @@ const showData = (phoneData) => {
                         <h5 class="card-title">${phone.phone_name}</h5>
                         <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                     </div>
-                    <button class="btn btn-primary w-25">Details</button>
+                    <!-- Button trigger modal -->
+                    <button onclick="phoneDataLoadById('${phone.slug}')" type="button" class="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Details
+                    </button>
                 </div>
             </div>
         `;
         getContainer.appendChild(addDiv);
+
     });
     toggleSpinner(false);//loading end here.
 }
@@ -112,12 +101,28 @@ const toggleSpinner = (condition) => {
     const spinner = document.getElementById('toggleSpinner');
     if (condition === true) {
         spinner.classList.remove('d-none');
-        // console.log('true');
     }
     else {
         spinner.classList.add('d-none');
-        // console.log('false');
     }
 }
+const phoneDataLoadById = async (id) => {
+    url = `https://openapi.programming-hero.com/api/phone/${id}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    showModal(data.data)
+}
 
+const showModal = (modalData) => {
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    modalTitle.innerText = modalData.name;
+    modalBody.innerHTML = `
+    <p>Release Date:${modalData.releaseDate}</p>
+    <p>Storage:     ${modalData.mainFeatures.storage}</p>
+    <p>Memory:      ${modalData.mainFeatures.memory}</p>
+    <p>Sensor:      ${modalData.mainFeatures.sensors}</p>
+    `
+    console.log(modalData);
+}
 loadPhoneData('iphone');
