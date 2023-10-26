@@ -1,17 +1,18 @@
 //get the array/object data from api 
-const loadPhoneData = async (searchText) => {
+const loadPhoneData = async (searchText, dataLimit) => {
     const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
     const res = await fetch(url);
     const data = await res.json();
-    console.log(data.data);
-    ProcessData(data.data);
+    // console.log(data.data);
+    // console.log(dataLimit,'start');
+    ProcessData(data.data,dataLimit);
 
 }
 
 //process array/object 
 const getContainer = document.getElementById('card-container')
 
-const ProcessData = (phoneData) => {
+const ProcessData = (phoneData, dataLimit) => {
 
     //no phone found
     const noPhone = document.getElementById('noPhoneNotification');
@@ -22,35 +23,46 @@ const ProcessData = (phoneData) => {
         noPhone.classList.add('d-none')
     }
     console.log(phoneData.length);
+    
 
-    //slice data 
-    if (phoneData.length > 12) {
-        const sliceData = phoneData.slice(0, 12);
-        console.log(sliceData.length);
+    //slice data    
+    console.log(phoneData.length);
+    // if (phoneData.length && dataLimit> 10)
+    console.log(dataLimit, 'dataLimit');
+    if (phoneData.length && dataLimit > 10) {
+
+        // console.log(dataLimit);
+        const sliceData = phoneData.slice(0, 10);
+        // console.log(sliceData.length);
         showData(sliceData);
         showAllButton(true);
+        console.log('sliced')
     }
     else {
         showData(phoneData);
         showAllButton(false);
+        console.log('not sliced');
     }
 
 }
 
 //showAll button
+const showButton = document.getElementById('showAll');
 const showAllButton = (term) => {
-    const showButton = document.getElementById('showAll');
-    if (term === true)
-    {
+    
+    if (term === true) {
         showButton.classList.remove('d-none');
+        // console.log(term)
     }
     else {
+        // console.log(term)
         showButton.classList.add('d-none');
     }
 }
 
-const showAll=()=>{
-
+const showAll = () => {
+    searchPhone();
+   
 }
 //use slice array/object  to show the data
 const showData = (phoneData) => {
@@ -76,21 +88,22 @@ const showData = (phoneData) => {
 }
 
 //get the search  phone
-const searchPhone = () => {
+const searchPhone = (dataLimit) => {
     toggleSpinner(true);//loading start form here
     const phoneName = document.getElementById('inputField').value;
-    loadPhoneData(phoneName);
+    loadPhoneData(phoneName, dataLimit);
+    console.log(dataLimit);
+
 }
 
 //button search
 document.getElementById('searchButton').addEventListener('click', function () {
-    searchPhone();
+    searchPhone(11);
 });
 //enter key search
 document.getElementById('inputField').addEventListener('keyup', function (event) {
-    if(event.key==='Enter')
-    {
-        searchPhone();
+    if (event.key === 'Enter') {
+        searchPhone(11);
     }
 });
 
